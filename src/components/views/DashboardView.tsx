@@ -54,17 +54,17 @@ export function DashboardView({
             <div className="space-y-2">
               <h3 className="font-bold text-lg">Selamat Datang, Panitia!</h3>
               <p className="text-sm text-white/80 leading-relaxed">
-                Kelola lomba (Individu/Tim) dengan mudah. Tambahkan lomba, daftarkan peserta/tim, lalu buat bagan untuk mencatat skor pemenang.
+                Kelola perlombaan PHBN mulai dari registrasi peserta massal, pembuatan bagan otomatis (bracket), hingga ekspor laporan akhir PDF.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
                 <div className="flex items-center gap-1.5 text-[10px] font-bold bg-white/10 px-2 py-1 rounded-lg">
-                  <span className="w-4 h-4 bg-white text-primary rounded-full flex items-center justify-center text-[8px]">1</span> Tambah Lomba
+                  <span className="w-4 h-4 bg-white text-primary rounded-full flex items-center justify-center text-[8px]">1</span> Buat Lomba
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] font-bold bg-white/10 px-2 py-1 rounded-lg">
-                  <span className="w-4 h-4 bg-white text-primary rounded-full flex items-center justify-center text-[8px]">2</span> Daftar Peserta
+                  <span className="w-4 h-4 bg-white text-primary rounded-full flex items-center justify-center text-[8px]">2</span> Registrasi Peserta
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] font-bold bg-white/10 px-2 py-1 rounded-lg">
-                  <span className="w-4 h-4 bg-white text-primary rounded-full flex items-center justify-center text-[8px]">3</span> Input Skor
+                  <span className="w-4 h-4 bg-white text-primary rounded-full flex items-center justify-center text-[8px]">3</span> Bagan & Pemenang
                 </div>
               </div>
             </div>
