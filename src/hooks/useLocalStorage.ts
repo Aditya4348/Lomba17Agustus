@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Competition, User } from './types';
+import { Competition, User } from '../types';
 
 const STORAGE_KEY = 'phbn_competitions';
 const AUTH_KEY = 'phbn_auth';

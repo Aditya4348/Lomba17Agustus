@@ -1,10 +1,3 @@
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
 export interface Match {
   id: string;
   participantIds: string[];
@@ -54,4 +47,13 @@ export interface Participant {
 export interface User {
   username: string;
   role: 'admin' | 'panitia';
+}
+
+export interface RegCard {
+  id: string;
+  name: string;
+  members: string[];
+  rt: string;
+  kelas: string;
+  kategori: string;
 }
