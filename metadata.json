@@ -1,0 +1,5 @@
+{
+  "name": "Panitia PHBN - Manajemen Lomba 17-an",
+  "description": "Aplikasi manajemen lomba 17 Agustus untuk panitia internal PHBN dengan fitur login, daftar lomba, dan pencatatan skor.",
+  "requestFramePermissions": []
+}
