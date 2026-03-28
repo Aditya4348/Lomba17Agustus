@@ -19,13 +19,12 @@ import { ReportView } from './components/views/ReportView';
 import { RegisterView } from './components/views/RegisterView';
 import { DetailView } from './components/views/DetailView';
 import { ConfirmModal, BracketModal } from './components/common/Modals';
+import { useAuth } from './context/AuthContext';
 
 export default function App() {
   const { 
     competitions, 
-    user, 
     isLoaded, 
-    login, 
     logout, 
     resetData,
     seedData,
@@ -33,6 +32,7 @@ export default function App() {
     updateCompetition, 
     deleteCompetition 
   } = useLocalStorage();
+  const { user } = useAuth();
 
   const [view, setView] = useState<'list' | 'detail' | 'add' | 'register' | 'report'>('list');
   const [selectedCompId, setSelectedCompId] = useState<string | null>(null);
@@ -374,7 +374,7 @@ export default function App() {
   );
 
   if (!user) {
-    return <LoginView onLogin={login} />;
+    return <LoginView />;
   }
 
   const selectedComp = competitions.find(c => c.id === selectedCompId);

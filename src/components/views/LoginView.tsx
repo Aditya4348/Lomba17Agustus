@@ -1,15 +1,36 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import { motion } from "motion/react";
 import { Trophy, User as UserIcon, Lock, ArrowRight, Info, Eye } from "lucide-react";
+import { useAuth } from "@/src/context/AuthContext";
+import ReCAPTCHA from "react-google-recaptcha";
+import toast from "react-hot-toast";
+import { set } from "date-fns";
 
-interface LoginViewProps {
-  onLogin: (username: string) => void;
-}
-
-export function LoginView({ onLogin }: LoginViewProps) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+export function LoginView() {
+  const { onLogin, isLogin } = useAuth();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [remember, setRemember] = useState(false);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!captchaToken) {
+      toast.error("Silakan selesaikan reCAPTCHA");
+      return;
+    }
+
+    await onLogin(username, password, captchaToken, remember);
+    setCaptchaToken(null);
+    setUsername("");
+    setPassword("");
+    setRemember(false);
+    recaptchaRef.current?.reset();
+  }
+
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
@@ -31,10 +52,7 @@ export function LoginView({ onLogin }: LoginViewProps) {
         </div>
 
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onLogin(username);
-          }}
+          onSubmit={handleSubmit}
           className="space-y-6"
         >
           {/* Username */}
@@ -81,12 +99,36 @@ export function LoginView({ onLogin }: LoginViewProps) {
             </div>
           </div>
 
+          {/* Remember Me */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="remember"
+              className="form-checkbox h-4 w-4 text-primary focus:ring-primary"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+            />
+            <label htmlFor="remember" className="ml-2 text-sm text-slate-600">
+              Ingat Saya
+            </label>
+          </div>
+
+          {/* reCAPTCHA */}
+          <div className="flex justify-center">
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+              onChange={(token) => setCaptchaToken(token)}
+            />
+          </div>
+
           {/* Button */}
           <button
             type="submit"
+            disabled={isLogin}
             className="btn-primary-clean mt-2 flex w-full items-center justify-center gap-2 py-4 text-base"
           >
-            Masuk ke Dashboard
+            {isLogin ? "Sedang Masuk..." : "Masuk ke Dashboard"}
             <ArrowRight className="h-5 w-5" />
           </button>
 

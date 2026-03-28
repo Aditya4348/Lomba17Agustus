@@ -1,14 +1,21 @@
 import { Flag, PieChart, FileText, LogOut } from 'lucide-react';
 import { User } from '../../types';
+import { useAuth } from '@/src/context/AuthContext';
 
 interface HeaderProps {
   user: User;
-  logout: () => void;
   seedData: () => void;
   handleExportAndReset: () => void;
 }
 
-export function Header({ user, logout, seedData, handleExportAndReset }: HeaderProps) {
+export function Header({ user,  seedData, handleExportAndReset }: HeaderProps) {
+  const { onLogout } = useAuth();
+
+  const handleLogout = () => {
+    onLogout();
+  };
+
+
   return (
     <header className="bg-white border-b border-slate-200 px-6 py-5 flex items-center justify-between sticky top-0 z-50 shadow-sm">
       <div className="flex items-center gap-3">
@@ -37,7 +44,7 @@ export function Header({ user, logout, seedData, handleExportAndReset }: HeaderP
           <FileText className="w-4 h-4" />
           <span className="hidden sm:inline">Tutup Kegiatan</span>
         </button>
-        <button onClick={logout} className="p-2 text-slate-400 hover:text-primary transition-colors hover:bg-primary/5 rounded-xl">
+        <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-primary transition-colors hover:bg-primary/5 rounded-xl">
           <LogOut className="w-5 h-5" />
         </button>
       </div>
