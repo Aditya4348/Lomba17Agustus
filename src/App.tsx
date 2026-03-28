@@ -383,7 +383,6 @@ export default function App() {
     <div className="min-h-screen bg-[#F8FAFC] pb-32">
       <Header 
         user={user} 
-        logout={logout} 
         seedData={seedData} 
         handleExportAndReset={handleExportAndReset} 
       />

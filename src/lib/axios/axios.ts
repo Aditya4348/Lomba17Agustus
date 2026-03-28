@@ -21,5 +21,34 @@ apiInstance.interceptors.request.use((config) => {
   return config;
 });
 
+// response interceptor untuk menangani error global
+apiInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      const status = error.response.status;
+      if (status === 401) {
+        // Token tidak valid atau sudah kadaluarsa, lakukan logout
+        localStorage.removeItem("token");
+        window.location.href = "/login"; // Redirect ke halaman login
+      } else if (status === 403) {
+        // Akses ditolak, bisa tampilkan pesan error atau redirect
+        alert("Akses ditolak. Anda tidak memiliki izin untuk melakukan aksi ini.");
+      } else if (status >= 500) {
+        // Server error, bisa tampilkan pesan error umum
+        alert("Terjadi kesalahan pada server. Silakan coba lagi nanti.");
+      }
+    } else if (error.request) {
+      // Permintaan dibuat tetapi tidak ada respons yang diterima
+      alert("Tidak dapat terhubung ke server. Silakan periksa koneksi Anda.");
+    } else {
+      // Kesalahan lain saat menyiapkan permintaan
+      alert("Terjadi kesalahan. Silakan coba lagi.");
+    }
+    return Promise.reject(error);
+  }
+);
+
+
 
 export default apiInstance;

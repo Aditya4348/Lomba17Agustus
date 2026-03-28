@@ -1,6 +1,7 @@
 import { Flag, PieChart, FileText, LogOut } from 'lucide-react';
 import { User } from '../../types';
 import { useAuth } from '@/src/context/AuthContext';
+import { currentYear } from '@/src/lib/CurrentYear';
 
 interface HeaderProps {
   user: User;
@@ -24,7 +25,7 @@ export function Header({ user,  seedData, handleExportAndReset }: HeaderProps) {
         </div>
         <div>
           <h2 className="font-bold text-slate-900 leading-tight">Panitia PHBN</h2>
-          <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">Tahun 2026 • {user.username}</p>
+          <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wider">Tahun {currentYear} • {user.username}</p>
         </div>
       </div>
       <div className="flex items-center gap-2">

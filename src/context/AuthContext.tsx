@@ -21,7 +21,6 @@ interface LoginResponse {
 const AuthContext = React.createContext({
   user: null as User | null,
   isLoading: false,
-  isAuthenticated: false,
   isLogin: false,
   error: null as Error | null,
   onLogout: () => {},
@@ -31,24 +30,18 @@ const AuthContext = React.createContext({
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const queryClient = useQueryClient();
-
-  const token = localStorage.getItem("token");
 
   // Function Untuk User
   const { data: user, isLoading } = useQuery<User | null>({
     queryKey: ["user"],
     queryFn: async () => {
-      const response = await apiInstance.get("/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiInstance.get("/user");
       return response.data;
     },
     staleTime: 3 * 60 * 60 * 1000, // Data dianggap fresh selama 3 jam
     retry: false, // Tidak melakukan retry otomatis jika gagal
+    enabled: !!localStorage.getItem("token"), // Hanya jalankan query jika token ada
   });
 
   // Menggunakan useMutation untuk login
@@ -66,9 +59,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return response.data;
     },
     onSuccess: (data) => {
-      setIsAuthenticated(true);
       queryClient.invalidateQueries({ queryKey: ["user"] });
-      localStorage.setItem("token", data.token); // <-- gunakan token dari backend
+      localStorage.setItem("token", data.token); // <-- gunakan token dari response backend bukan dari request
       toast.success("Login berhasil");
     },
     onError: (err: Error) => {
@@ -84,7 +76,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return { success: true };
     },
     onSuccess: () => {
-      setIsAuthenticated(false);
       queryClient.clear();
       toast.success("Logout berhasil");
     },
@@ -98,7 +89,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         user,
         isLoading,
-        isAuthenticated,
         isLogin,
         error,
         onLogin: (username, password, captchaToken, remember) =>

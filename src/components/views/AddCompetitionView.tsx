@@ -1,13 +1,46 @@
+import React, {useState} from 'react';
 import { motion } from 'motion/react';
 import { ChevronRight, Info, User as UserIcon, Users } from 'lucide-react';
-import { Competition } from '../../types';
+import { Competition } from '@/src/types';
+import { useCompetition } from '@/src/context/CompetitionContext';
 
 interface AddCompetitionViewProps {
   setView: (view: 'list' | 'detail' | 'add' | 'register' | 'report') => void;
-  addCompetition: (comp: Omit<Competition, 'id' | 'participants'>) => void;
 }
 
-export function AddCompetitionView({ setView, addCompetition }: AddCompetitionViewProps) {
+export function AddCompetitionView({ setView }: AddCompetitionViewProps) {
+  const { createCompetition, isCreating } = useCompetition();
+
+  // State untuk form input bisa ditambahkan di sini jika ingin menggunakan controlled components
+  const [formData, setFormData] = useState({
+    type: 'individu',
+    name: '',
+    category: 'Anak-anak',
+    date: '2026-08-17',
+    time: '09:00',
+    location: '',
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Buat objek kompetisi baru sesuai dengan tipe Competition
+    const newCompetition = {
+      name: formData.name,
+      category: formData.category,
+      type: formData.type as 'individu' | 'tim',
+      time: formData.time,
+      date: formData.date,
+      location: formData.location,
+      status: 'pending' as const,
+      participants: [],
+      winners: {}
+    } as Competition;
+
+    createCompetition(newCompetition);
+    setView('list');
+  };
+
   return (
     <motion.div 
       key="add"
@@ -34,23 +67,7 @@ export function AddCompetitionView({ setView, addCompetition }: AddCompetitionVi
           </p>
         </div>
 
-        <form 
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            addCompetition({
-              name: formData.get('name') as string,
-              category: formData.get('category') as string,
-              type: formData.get('type') as 'individu' | 'tim',
-              date: formData.get('date') as string,
-              time: formData.get('time') as string,
-              location: formData.get('location') as string,
-              status: 'pending'
-            });
-            setView('list');
-          }}
-          className="space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-1.5">
             <label className="text-sm font-semibold text-slate-700 ml-1">Jenis Lomba</label>
             <div className="grid grid-cols-2 gap-3">
@@ -62,7 +79,8 @@ export function AddCompetitionView({ setView, addCompetition }: AddCompetitionVi
                   <input 
                     type="radio" 
                     name="type" 
-                    value={t.id} 
+                    value={formData.type}
+                    onChange={() => setFormData(prev => ({ ...prev, type: t.id }))} 
                     className="peer sr-only" 
                     defaultChecked={t.id === 'individu'}
                   />
@@ -76,11 +94,19 @@ export function AddCompetitionView({ setView, addCompetition }: AddCompetitionVi
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-semibold text-slate-700 ml-1">Nama Lomba</label>
-            <input name="name" type="text" className="input-clean" placeholder="Contoh: Balap Karung" required />
+            <input 
+              name="name" 
+              type="text" 
+              value={formData.name} 
+              onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              className="input-clean" 
+              placeholder="Contoh: Balap Karung" 
+              required 
+            />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-semibold text-slate-700 ml-1">Kategori Peserta</label>
-            <select name="category" className="input-clean appearance-none" required>
+            <select name="category" value={formData.category} onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}  className="input-clean appearance-none" required>
               <option value="Anak-anak">Anak-anak</option>
               <option value="Remaja">Remaja</option>
               <option value="Dewasa">Dewasa</option>
@@ -90,20 +116,32 @@ export function AddCompetitionView({ setView, addCompetition }: AddCompetitionVi
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-slate-700 ml-1">Tanggal</label>
-              <input name="date" type="date" className="input-clean" defaultValue="2026-08-17" required />
+              <input name="date" type="date" value={formData.date} onChange={e => setFormData(prev => ({ ...prev, date: e.target.value }))} className="input-clean" required />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-slate-700 ml-1">Waktu Mulai</label>
-              <input name="time" type="time" className="input-clean" required />
+              <input name="time" type="time" value={formData.time} onChange={e => setFormData(prev => ({ ...prev, time: e.target.value }))} className="input-clean" required />
             </div>
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-semibold text-slate-700 ml-1">Lokasi Pelaksanaan</label>
-            <input name="location" type="text" className="input-clean" placeholder="Contoh: Lapangan Utama RT 01" required />
+            <input 
+              name="location" 
+              type="text" 
+              value={formData.location} 
+              onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))} 
+              className="input-clean" 
+              placeholder="Contoh: Lapangan Utama RT 01" 
+              required 
+            />
           </div>
           <div className="pt-4">
-            <button type="submit" className="btn-primary-clean w-full py-4 text-base">
-              Simpan Data Lomba
+            <button 
+              type="submit" 
+              disabled={isCreating}
+              className="btn-primary-clean w-full py-4 text-base disabled:opacity-50"
+            >
+              {isCreating ? "Menyimpan..." : "Simpan Data Lomba"}
             </button>
           </div>
         </form>
